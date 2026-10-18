@@ -1,0 +1,6 @@
+{
+  "name": "AFEGWICHAT",
+  "description": "AFEGWICHAT: Private messenger combining Session's cryptographic anonymity and onion routing, Telegram's interface and unlimited file size sharing, and WhatsApp's status updates with 24h, 7-day, and 30-day display options.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

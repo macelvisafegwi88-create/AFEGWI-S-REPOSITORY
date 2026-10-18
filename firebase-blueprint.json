@@ -1,0 +1,301 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Cryptographic user account profile attached to Google account.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID matching Google user."
+        },
+        "email": {
+          "type": "string",
+          "description": "Google Gmail account email address."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name."
+        },
+        "sessionId": {
+          "type": "string",
+          "description": "66-character hex cryptographic Session identifier."
+        },
+        "recoverySeed": {
+          "type": "array",
+          "description": "12-word mnemonic recovery phrase."
+        },
+        "onionRoutingEnabled": {
+          "type": "boolean",
+          "description": "Whether multi-hop onion routing is active."
+        },
+        "dummyTrafficEnabled": {
+          "type": "boolean",
+          "description": "Whether dummy background traffic is enabled."
+        },
+        "screenSecurityEnabled": {
+          "type": "boolean",
+          "description": "Whether FLAG_SECURE screenshot prevention is active."
+        },
+        "isDecoyMode": {
+          "type": "boolean",
+          "description": "Whether decoy panic mode is active."
+        },
+        "totalVaultSize": {
+          "type": "string",
+          "description": "Summary formatted vault storage size."
+        },
+        "totalChunksEncrypted": {
+          "type": "integer",
+          "description": "Total chunks securely processed."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["userId", "email", "displayName", "sessionId", "createdAt"]
+    },
+    "ChatMeta": {
+      "title": "ChatMeta",
+      "description": "Metadata for a direct, group, or saved vault conversation.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Chat unique identifier."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID."
+        },
+        "name": {
+          "type": "string",
+          "description": "Chat or group title."
+        },
+        "recipientSessionId": {
+          "type": "string",
+          "description": "Session ID of the recipient or group ID."
+        },
+        "type": {
+          "type": "string",
+          "description": "ChatType enum: DIRECT, GROUP, SAVED_VAULT, CHANNEL, SECRET."
+        },
+        "lastMessage": {
+          "type": "string",
+          "description": "Snippet of last message."
+        },
+        "lastTimestamp": {
+          "type": "string",
+          "description": "Formatted time of last message."
+        },
+        "unreadCount": {
+          "type": "integer",
+          "description": "Number of unread messages."
+        },
+        "isPinned": {
+          "type": "boolean",
+          "description": "Whether chat is pinned to top."
+        },
+        "isMuted": {
+          "type": "boolean",
+          "description": "Mute notification state."
+        },
+        "isVerified": {
+          "type": "boolean",
+          "description": "Cryptographic key verification state."
+        },
+        "disappearingTimer": {
+          "type": "string",
+          "description": "Disappearing timer preset."
+        },
+        "safetyNumber": {
+          "type": "string",
+          "description": "Safety verification fingerprint."
+        },
+        "avatarColorHex": {
+          "type": "integer",
+          "description": "Color hex for avatar tint."
+        },
+        "onlineStatus": {
+          "type": "string",
+          "description": "Node connectivity status."
+        },
+        "memberCount": {
+          "type": "integer",
+          "description": "Number of group members."
+        },
+        "topic": {
+          "type": "string",
+          "description": "Group topic description."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["id", "userId", "name", "type", "createdAt"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Individual message inside a chat or personal vault.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Message unique identifier."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID."
+        },
+        "chatId": {
+          "type": "string",
+          "description": "Parent chat ID."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Session ID of sender."
+        },
+        "senderName": {
+          "type": "string",
+          "description": "Display name of sender."
+        },
+        "text": {
+          "type": "string",
+          "description": "Decrypted message text content."
+        },
+        "timestamp": {
+          "type": "integer",
+          "description": "Epoch millisecond timestamp."
+        },
+        "isOutgoing": {
+          "type": "boolean",
+          "description": "Whether message was authored by current user."
+        },
+        "status": {
+          "type": "string",
+          "description": "Message delivery status: SENDING, SENT_ONION, DELIVERED, READ."
+        },
+        "attachmentName": {
+          "type": "string",
+          "description": "Attachment file name if present."
+        },
+        "attachmentFormattedSize": {
+          "type": "string",
+          "description": "Attachment readable size if present."
+        },
+        "attachmentType": {
+          "type": "string",
+          "description": "AttachmentType enum name."
+        },
+        "attachmentChecksum": {
+          "type": "string",
+          "description": "SHA-256 integrity checksum."
+        },
+        "isVoice": {
+          "type": "boolean",
+          "description": "Whether message is voice note."
+        },
+        "voiceDurationSec": {
+          "type": "integer",
+          "description": "Voice duration in seconds."
+        },
+        "isPinned": {
+          "type": "boolean",
+          "description": "Pin state in chat."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["id", "userId", "chatId", "senderId", "text", "createdAt"]
+    },
+    "StatusStory": {
+      "title": "StatusStory",
+      "description": "WhatsApp-style encrypted status update with 24h, 7d, or 30d duration.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Status unique ID."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Author UID."
+        },
+        "userName": {
+          "type": "string",
+          "description": "Author display name."
+        },
+        "userSessionId": {
+          "type": "string",
+          "description": "Author Session ID."
+        },
+        "type": {
+          "type": "string",
+          "description": "TEXT_GRADIENT or PHOTO."
+        },
+        "text": {
+          "type": "string",
+          "description": "Status text content."
+        },
+        "caption": {
+          "type": "string",
+          "description": "Photo caption."
+        },
+        "durationHours": {
+          "type": "integer",
+          "description": "Duration in hours: 24, 168, or 720."
+        },
+        "expiresAt": {
+          "type": "integer",
+          "description": "Epoch millisecond expiration time."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp via FieldValue.serverTimestamp()."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server update timestamp via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": ["id", "userId", "userName", "type", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Encrypted user profile and security preferences."
+    },
+    "/users/{userId}/chats/{chatId}": {
+      "schema": "ChatMeta",
+      "description": "Chats and groups belonging to the user."
+    },
+    "/users/{userId}/chats/{chatId}/messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Messages inside user chats and personal vault."
+    },
+    "/users/{userId}/statuses/{statusId}": {
+      "schema": "StatusStory",
+      "description": "WhatsApp-style status updates posted by the user."
+    }
+  }
+}

@@ -1,0 +1,168 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 &&
+             data.email is string && data.email.size() <= 256 &&
+             data.displayName is string && data.displayName.size() <= 100 &&
+             data.sessionId is string && data.sessionId.size() <= 128 &&
+             (!('onionRoutingEnabled' in data) || data.onionRoutingEnabled is bool) &&
+             (!('dummyTrafficEnabled' in data) || data.dummyTrafficEnabled is bool) &&
+             (!('screenSecurityEnabled' in data) || data.screenSecurityEnabled is bool) &&
+             (!('isDecoyMode' in data) || data.isDecoyMode is bool) &&
+             (!('totalVaultSize' in data) || (data.totalVaultSize is string && data.totalVaultSize.size() <= 50)) &&
+             (!('totalChunksEncrypted' in data) || data.totalChunksEncrypted is int);
+    }
+
+    function isValidChatMeta(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.name is string && data.name.size() <= 150 &&
+             data.type is string && data.type.size() <= 50 &&
+             (!('recipientSessionId' in data) || (data.recipientSessionId is string && data.recipientSessionId.size() <= 128)) &&
+             (!('lastMessage' in data) || (data.lastMessage is string && data.lastMessage.size() <= 500)) &&
+             (!('lastTimestamp' in data) || (data.lastTimestamp is string && data.lastTimestamp.size() <= 50)) &&
+             (!('unreadCount' in data) || data.unreadCount is int) &&
+             (!('isPinned' in data) || data.isPinned is bool) &&
+             (!('isMuted' in data) || data.isMuted is bool) &&
+             (!('isVerified' in data) || data.isVerified is bool) &&
+             (!('disappearingTimer' in data) || (data.disappearingTimer is string && data.disappearingTimer.size() <= 50)) &&
+             (!('safetyNumber' in data) || (data.safetyNumber is string && data.safetyNumber.size() <= 100)) &&
+             (!('onlineStatus' in data) || (data.onlineStatus is string && data.onlineStatus.size() <= 100)) &&
+             (!('memberCount' in data) || data.memberCount is int) &&
+             (!('topic' in data) || (data.topic is string && data.topic.size() <= 300));
+    }
+
+    function isValidChatMessage(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.chatId is string && data.chatId.size() <= 128 &&
+             data.senderId is string && data.senderId.size() <= 128 &&
+             data.text is string && data.text.size() <= 10000 &&
+             (!('senderName' in data) || (data.senderName is string && data.senderName.size() <= 100)) &&
+             (!('timestamp' in data) || data.timestamp is int) &&
+             (!('isOutgoing' in data) || data.isOutgoing is bool) &&
+             (!('status' in data) || (data.status is string && data.status.size() <= 50)) &&
+             (!('attachmentName' in data) || (data.attachmentName is string && data.attachmentName.size() <= 256)) &&
+             (!('attachmentFormattedSize' in data) || (data.attachmentFormattedSize is string && data.attachmentFormattedSize.size() <= 50)) &&
+             (!('attachmentType' in data) || (data.attachmentType is string && data.attachmentType.size() <= 50)) &&
+             (!('attachmentChecksum' in data) || (data.attachmentChecksum is string && data.attachmentChecksum.size() <= 128)) &&
+             (!('isVoice' in data) || data.isVoice is bool) &&
+             (!('voiceDurationSec' in data) || data.voiceDurationSec is int) &&
+             (!('isPinned' in data) || data.isPinned is bool);
+    }
+
+    function isValidStatusStory(data) {
+      return data.id is string && data.id.size() <= 128 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.userName is string && data.userName.size() <= 100 &&
+             data.type is string && data.type.size() <= 50 &&
+             (!('text' in data) || (data.text is string && data.text.size() <= 2000)) &&
+             (!('caption' in data) || (data.caption is string && data.caption.size() <= 500)) &&
+             (!('durationHours' in data) || data.durationHours is int) &&
+             (!('expiresAt' in data) || data.expiresAt is int);
+    }
+
+    // User Profile Scope
+    match /users/{userId} {
+      allow get, list: if isSignedIn() && request.auth.uid == userId;
+
+      allow create: if isSignedIn() &&
+                       request.auth.uid == userId &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().createdAt is timestamp &&
+                       incoming().createdAt <= request.time &&
+                       isValidUserProfile(incoming());
+
+      allow update: if isSignedIn() &&
+                       request.auth.uid == userId &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       isValidUserProfile(incoming());
+
+      allow delete: if isSignedIn() && request.auth.uid == userId;
+
+      // User Chats Subcollection
+      match /chats/{chatId} {
+        allow get, list: if isSignedIn() && request.auth.uid == userId;
+
+        allow create: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         incoming().userId == request.auth.uid &&
+                         incoming().createdAt is timestamp &&
+                         incoming().createdAt <= request.time &&
+                         isValidChatMeta(incoming());
+
+        allow update: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidChatMeta(incoming());
+
+        allow delete: if isSignedIn() && request.auth.uid == userId;
+
+        // Messages in Chat
+        match /messages/{messageId} {
+          allow get, list: if isSignedIn() && request.auth.uid == userId;
+
+          allow create: if isSignedIn() &&
+                           request.auth.uid == userId &&
+                           incoming().userId == request.auth.uid &&
+                           incoming().createdAt is timestamp &&
+                           incoming().createdAt <= request.time &&
+                           isValidChatMessage(incoming());
+
+          allow update: if isSignedIn() &&
+                           request.auth.uid == userId &&
+                           incoming().userId == existing().userId &&
+                           incoming().createdAt == existing().createdAt &&
+                           isValidChatMessage(incoming());
+
+          allow delete: if isSignedIn() && request.auth.uid == userId;
+        }
+      }
+
+      // User Statuses Subcollection
+      match /statuses/{statusId} {
+        allow get, list: if isSignedIn(); // Other authenticated contacts can view statuses
+
+        allow create: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         incoming().userId == request.auth.uid &&
+                         incoming().createdAt is timestamp &&
+                         incoming().createdAt <= request.time &&
+                         isValidStatusStory(incoming());
+
+        allow update: if isSignedIn() &&
+                         request.auth.uid == userId &&
+                         incoming().userId == existing().userId &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidStatusStory(incoming());
+
+        allow delete: if isSignedIn() && request.auth.uid == userId;
+      }
+    }
+  }
+}

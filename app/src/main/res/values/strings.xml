@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">AFEGWICHAT</string>
+    <string name="tab_all">All Chats</string>
+    <string name="tab_private">Direct</string>
+    <string name="tab_status">Status</string>
+    <string name="tab_channels">Channels</string>
+    <string name="tab_groups">Groups</string>
+    <string name="tab_vault">Vault</string>
+    <string name="my_session_id">Session ID</string>
+    <string name="status_recent_updates">Recent updates</string>
+    <string name="status_viewed_updates">Viewed updates</string>
+    <string name="status_my_status">My Status</string>
+    <string name="status_tap_to_add">Tap to add status update</string>
+    <string name="onion_status">Onion Routing: 3 Hops Active</string>
+    <string name="file_size_unlimited">No file size limits (Telegram liberty)</string>
+    <string name="e2e_encrypted">End-to-End Encrypted</string>
+</resources>
